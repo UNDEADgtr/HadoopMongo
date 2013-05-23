@@ -22,7 +22,7 @@ public class Util {
 
     public void importToBase() throws IOException {
 
-        Scanner scanner = new Scanner(new FileReader("/home/dzmity/IdeaProjects/HadoopTest/src/main/resources/nl/jnc/util/apat.txt"));
+        Scanner scanner = new Scanner(new FileReader("/home/dzmity/IdeaProjects/HadoopTest/src/main/resources/nl/nl.jnc/nl.nl.jnc.util/apat.txt"));
         Mongo mongo = new MongoClient();
         DBCollection collection = mongo.getDB("test").getCollection("in");
         scanner.nextLine();
