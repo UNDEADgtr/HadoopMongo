@@ -6,26 +6,25 @@ import com.mongodb.DBObject;
 import com.mongodb.MapReduceCommand;
 import com.mongodb.MapReduceOutput;
 import com.mongodb.MongoClient;
-import org.apache.log4j.Logger;
+import nl.jnc.AppConfig;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.net.UnknownHostException;
+public class WordCountMongo implements Runnable {
 
-public class WordCountMongo {
-
-    private static Logger logger = Logger.getLogger(WordCountMongo.class);
+    private static final Log logger = LogFactory.getLog(WordCountMongo.class);
+    private AppConfig appConfig;
 
     private DBCollection relativeCollection;
-    private String baseName = "test";
-    private String collectionIn = "in";
-    private String collectionOut = "mongo_out";
     private String mapFunc, reduceFunc;
     private final MapReduceCommand mpCommand;
 
-    public WordCountMongo() throws UnknownHostException {
+    public WordCountMongo(AppConfig appConfig) throws Exception {
 
+        this.appConfig = appConfig;
         MongoClient mongoClient = new MongoClient();
-        DB db = mongoClient.getDB(baseName);
-        this.relativeCollection = db.getCollection(collectionIn);
+        DB db = mongoClient.getDB(appConfig.getDbName());
+        this.relativeCollection = db.getCollection(appConfig.getInCollection());
 
         this.mapFunc = "function() {emit(this.country, 1);}";
 
@@ -35,18 +34,40 @@ public class WordCountMongo {
                 relativeCollection,
                 mapFunc,
                 reduceFunc,
-                collectionOut,
+                appConfig.getOutMongoCollection(),
                 MapReduceCommand.OutputType.REPLACE, null
         );
     }
 
+    @Override
     public void run() {
-
-        MapReduceOutput mapReduceOutput = relativeCollection.mapReduce(mpCommand);
-        DBObject counts = (DBObject) mapReduceOutput.getCommandResult().get("counts");
-
-        System.out.println("Input records = " + counts.get("input"));
-        System.out.println("Output records = " + counts.get("output"));
+        double oneBillion = 1000000000d;
+        try {
+            int i = 0;
+            while (true) {
+                Thread.sleep(appConfig.getAbsoluteCalculatePeriodMills());
+                logger.debug("start Map-Reduce Mongo...");
+                long startTime = System.nanoTime();
+                MapReduceOutput mapReduceOutput = relativeCollection.mapReduce(mpCommand);
+                long endMapReduceTime = System.nanoTime();
+                double mapReduceTime = (endMapReduceTime - startTime) / oneBillion;
+                logger.debug("Map-Reduce Mongo time = " + mapReduceTime + " seconds");
+                DBObject counts = (DBObject) mapReduceOutput.getCommandResult().get("counts");
+                logger.debug("Input records = " + counts.get("input"));
+                logger.debug("Output records = " + counts.get("output"));
+                appConfig.addTime(mapReduceTime);
+                if (!appConfig.isLaunched()) {
+                    break;
+                }
+//                if (appConfig.getLaunchCount() == i) {
+//                    break;
+//                }
+//                i++;
+            }
+        } catch (InterruptedException e) {
+            logger.error(e);
+        }
+        logger.debug("      Result time = " + appConfig.getAverageTime());
     }
 
 }

@@ -17,17 +17,21 @@
 
 package nl.jnc.hadoop;
 
+import com.mongodb.DBObject;
 import com.mongodb.hadoop.MongoInputFormat;
 import com.mongodb.hadoop.MongoOutputFormat;
 import com.mongodb.hadoop.util.MongoConfigUtil;
+import nl.jnc.AppConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.bson.BSONObject;
 
 import java.io.IOException;
@@ -37,9 +41,11 @@ import java.util.StringTokenizer;
  * test.in db.in.insert( { x : "eliot was here" } ) db.in.insert( { x : "eliot is here" } ) db.in.insert( { x : "who is
  * here" } ) =
  */
-public class WordCount {
+public class WordCount implements Runnable {
 
-    private static final Log log = LogFactory.getLog(WordCount.class);
+    private static final Log logger = LogFactory.getLog(WordCount.class);
+
+    private AppConfig appConfig;
 
     public static class TokenizerMapper extends Mapper<Object, BSONObject, Text, IntWritable> {
 
@@ -75,30 +81,66 @@ public class WordCount {
         }
     }
 
-    public boolean run() throws IOException, ClassNotFoundException, InterruptedException {
+    public WordCount(AppConfig config) {
+        this.appConfig = config;
+    }
+
+    @Override
+    public void run() {
         final Configuration conf = new Configuration();
 
-        MongoConfigUtil.setInputURI(conf, "mongodb://localhost/test.in");
-        MongoConfigUtil.setOutputURI(conf, "mongodb://localhost/test.hadoop_out");
+        MongoConfigUtil.setInputURI(conf, "mongodb://localhost/" + appConfig.getDbName() + "." + appConfig.getInCollection());
+        MongoConfigUtil.setOutputURI(conf, "mongodb://localhost/" + appConfig.getDbName() + "." + appConfig.getOutHadoopCollection());
 
-        System.out.println("Conf: " + conf);
+        double oneBillion = 1000000000d;
+        try {
+            int i=0;
+            while (true) {
+                Thread.sleep(appConfig.getAbsoluteCalculatePeriodMills());
 
-        final Job job = new Job(conf, "word count");
+                Job job = null;
+                try {
+                    job = new Job(conf, "word count");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-        job.setJarByClass(WordCount.class);
+                job.setJarByClass(WordCount.class);
+                job.setMapperClass(TokenizerMapper.class);
+                job.setCombinerClass(IntSumReducer.class);
+                job.setReducerClass(IntSumReducer.class);
+                job.setOutputKeyClass(Text.class);
+                job.setOutputValueClass(IntWritable.class);
+                job.setInputFormatClass(MongoInputFormat.class);
+                job.setOutputFormatClass(MongoOutputFormat.class);
+                //job.setOutputFormatClass(NullOutputFormat.class);
 
-        job.setMapperClass(TokenizerMapper.class);
+                logger.debug("start Map-Reduce Hodoop...");
+                long startTime = System.nanoTime();
+                logger.debug("stop Hodoop Map-Reduce: " + job.waitForCompletion(true));
 
-        job.setCombinerClass(IntSumReducer.class);
-        job.setReducerClass(IntSumReducer.class);
+                long endMapReduceTime = System.nanoTime();
+                double mapReduceTime = (endMapReduceTime - startTime) / oneBillion;
+                logger.debug("Map-Reduce Hodoop time = " + mapReduceTime + " seconds");
+                appConfig.addTime(mapReduceTime);
+                if (!appConfig.isLaunched()) {
+                    break;
+                }
+//                if (appConfig.getLaunchCount() == i) {
+//                    break;
+//                }
+//                i++;
+            }
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        logger.debug("      Result time = " + appConfig.getAverageTime());
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
-
-        job.setInputFormatClass(MongoInputFormat.class);
-        job.setOutputFormatClass(MongoOutputFormat.class);
-
-        return job.waitForCompletion(true) ? false : true;
     }
+
+//    public static void main( String[] args ) throws Exception{
+//        WordCount wordCount = new WordCount();
+//        wordCount.run();
+//    }
 
 }

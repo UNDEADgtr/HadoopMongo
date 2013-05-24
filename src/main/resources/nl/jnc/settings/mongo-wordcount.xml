@@ -50,12 +50,12 @@
   <property>
     <!-- Class for the mapper -->
     <name>mongo.job.mapper</name>
-    <value>nl.nl.jnc.hadoop.WordCountXMLConfig$TokenizerMapper</value>
+    <value>nl.jnc.hadoop.WordCountXMLConfig$TokenizerMapper</value>
   </property>
   <property>
     <!-- Reducer class -->
     <name>mongo.job.reducer</name>
-    <value>nl.nl.jnc.hadoop.WordCountXMLConfig$IntSumReducer</value>
+    <value>nl.jnc.hadoop.WordCountXMLConfig$IntSumReducer</value>
   </property>
   <property>
     <!-- InputFormat Class -->
@@ -90,7 +90,7 @@
   <property>
     <!-- Class for the combiner [optional] -->
     <name>mongo.job.combiner</name>
-    <value>nl.nl.jnc.hadoop.WordCountXMLConfig$IntSumReducer</value>
+    <value>nl.jnc.hadoop.WordCountXMLConfig$IntSumReducer</value>
   </property>
   <property>
     <!-- Partitioner class [optional] -->

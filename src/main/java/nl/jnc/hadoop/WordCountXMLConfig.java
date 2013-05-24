@@ -28,10 +28,6 @@ import org.bson.BSONObject;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-/**
- * test.in db.in.insert( { x : "eliot was here" } ) db.in.insert( { x : "eliot is here" } ) db.in.insert( { x : "who is
- * here" } ) =
- */
 public class WordCountXMLConfig extends MongoTool {
 
     public static class TokenizerMapper extends Mapper<Object, BSONObject, Text, IntWritable> {

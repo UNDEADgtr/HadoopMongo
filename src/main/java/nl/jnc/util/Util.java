@@ -36,7 +36,7 @@ public class Util {
 
         List<DBObject> list = new ArrayList<DBObject>(10000);
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 5; i++) {
             stream = clazz.getResourceAsStream("apat.txt");
             scanner = new Scanner(stream);
             scanner.nextLine();
@@ -53,6 +53,9 @@ public class Util {
                     list.clear();
                 }
                 count++;
+//                if(count == 100000){
+//                    break;
+//                }
             }
         }
 
