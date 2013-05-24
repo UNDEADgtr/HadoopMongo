@@ -28,7 +28,7 @@ public class WordCountMongoAggregation implements Runnable {
 
     public WordCountMongoAggregation(AppConfig appConfig) throws UnknownHostException {
         this.appConfig = appConfig;
-        MongoClient mongoClient = new MongoClient();
+        MongoClient mongoClient = new MongoClient(appConfig.getMongoHost(), appConfig.getMongoPort());
         DB db = mongoClient.getDB(appConfig.getDbName());
         this.relativeCollection = db.getCollection(appConfig.getInCollection());
         this.absoluteCollectionName = appConfig.getOutMongoAggregateCollection();

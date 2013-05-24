@@ -27,7 +27,7 @@ public class Client implements Runnable {
 
     public Client(AppConfig config) throws UnknownHostException {
         this.appConfig = config;
-        Mongo mongo = new MongoClient();
+        Mongo mongo = new MongoClient(appConfig.getMongoHost(), appConfig.getMongoPort());
         this.collection = mongo.getDB(config.getDbName()).getCollection(config.getInCollection());
         this.deviceId = new ObjectId().toString();
         this.totalTime = new ArrayList<Long>();

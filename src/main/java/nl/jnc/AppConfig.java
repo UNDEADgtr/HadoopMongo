@@ -5,6 +5,8 @@ import java.util.List;
 
 public class AppConfig {
 
+    private String mongoHost;
+    private int mongoPort;
     private String dbName;
     private String inCollection;
     private String outHadoopCollection;
@@ -18,10 +20,21 @@ public class AppConfig {
     private int numberOfClients;
     private List<Double> time;
 
-    public AppConfig(String dbName, String inCollection, String outHadoopCollection, String outMongoCollection,
+    public AppConfig(String mongoHost,
+                     int mongoPort,
+                     String dbName,
+                     String inCollection,
+                     String outHadoopCollection,
+                     String outMongoCollection,
                      String outMongoAggregateCollection,
-                     long numberOfRequest, long absoluteCalculatePeriodMills, long clientSleepMills,
-                     boolean launched, int launchCount, int numberOfClients) {
+                     long numberOfRequest,
+                     long absoluteCalculatePeriodMills,
+                     long clientSleepMills,
+                     boolean launched,
+                     int launchCount,
+                     int numberOfClients) {
+        this.mongoHost = mongoHost;
+        this.mongoPort = mongoPort;
         this.dbName = dbName;
         this.inCollection = inCollection;
         this.outHadoopCollection = outHadoopCollection;
@@ -33,7 +46,15 @@ public class AppConfig {
         this.launched = launched;
         this.launchCount = launchCount;
         this.numberOfClients = numberOfClients;
-        time = new ArrayList<Double>();
+        this.time = new ArrayList<Double>();
+    }
+
+    public String getMongoHost() {
+        return mongoHost;
+    }
+
+    public int getMongoPort() {
+        return mongoPort;
     }
 
     public String getDbName() {

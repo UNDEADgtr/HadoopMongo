@@ -22,7 +22,7 @@ public class WordCountMongoMapReduce implements Runnable {
     public WordCountMongoMapReduce(AppConfig appConfig) throws Exception {
 
         this.appConfig = appConfig;
-        MongoClient mongoClient = new MongoClient();
+        MongoClient mongoClient = new MongoClient(appConfig.getMongoHost(), appConfig.getMongoPort());
         DB db = mongoClient.getDB(appConfig.getDbName());
         this.relativeCollection = db.getCollection(appConfig.getInCollection());
 

@@ -85,13 +85,14 @@ public class WordCountHadoop implements Runnable {
     @Override
     public void run() {
         final Configuration conf = new Configuration();
+        String mongoAddress = appConfig.getMongoHost() + ":" + appConfig.getMongoPort();
 
-        MongoConfigUtil.setInputURI(conf, "mongodb://localhost/" + appConfig.getDbName() + "." + appConfig.getInCollection());
-        MongoConfigUtil.setOutputURI(conf, "mongodb://localhost/" + appConfig.getDbName() + "." + appConfig.getOutHadoopCollection());
+        MongoConfigUtil.setInputURI(conf, "mongodb://" + mongoAddress + "/" + appConfig.getDbName() + "." + appConfig.getInCollection());
+        MongoConfigUtil.setOutputURI(conf, "mongodb://" + mongoAddress + "/" + appConfig.getDbName() + "." + appConfig.getOutHadoopCollection());
 
         double oneBillion = 1000000000d;
         try {
-            int i=0;
+            int i = 0;
             while (true) {
                 Thread.sleep(appConfig.getAbsoluteCalculatePeriodMills());
 

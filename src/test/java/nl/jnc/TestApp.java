@@ -13,6 +13,9 @@ public class TestApp {
 
     private static Logger logger = Logger.getLogger(TestApp.class);
 
+    private static String mongoHost = "localhost";
+    private static int mongoPort = 20001;
+
     private static int numberOfClients = 2000;
     private static int numberOfRequests = 2000;
     private static String dbName = "test";
@@ -28,7 +31,10 @@ public class TestApp {
     private static AppConfig appConfig;
 
     static {
-        appConfig = new AppConfig(dbName,
+        appConfig = new AppConfig(
+                mongoHost,
+                mongoPort,
+                dbName,
                 inCollection,
                 outHadoopCollection,
                 outMongoCollectionMR,
@@ -77,7 +83,6 @@ public class TestApp {
         WordCountHadoop wordCount = new WordCountHadoop(appConfig);
         new Thread(wordCount).start();
     }
-
 
     private void startMapReduceMongo() throws Exception {
         WordCountMongoMapReduce wordCount = new WordCountMongoMapReduce(appConfig);
