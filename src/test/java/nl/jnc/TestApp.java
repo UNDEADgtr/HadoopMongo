@@ -16,14 +16,14 @@ public class TestApp {
     private static String mongoHost = "localhost";
     private static int mongoPort = 40001;
 
-    private static int numberOfClients = 2000;
+    private static int numberOfClients = 300;
     private static int numberOfRequests = 2000;
     private static String dbName = "test";
     private static String inCollection = "in";
     private static String outHadoopCollection = "hadoop_out";
     private static String outMongoCollectionMR = "mongo_out_mr";
     private static String outMongoCollectionAggregate = "mongo_out_aggregate";
-    private static long absoluteCalculatePeriod = 1000l;
+    private static long absoluteCalculatePeriod = 5000l;
     private static long clientSleepMills = 50l;
     private static boolean launched = true;
     private static int launchCount = 10;
@@ -65,10 +65,10 @@ public class TestApp {
 
     public void test() throws Exception {
         logger.debug("starting test...");
-        //this.startClients();
+        this.startClients();
         //this.startMapReduceHodoop();
-        this.startMapReduceMongo();
-        this.startMongoAggregate();
+        //this.startMapReduceMongo();
+        //this.startMongoAggregate();
     }
 
     private void startClients() throws UnknownHostException {

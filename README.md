@@ -10,7 +10,7 @@ This is test project which use Hadoop, MongoDB and MapReduce
 
 ## mongo shard server
 
-    mkdir ~/mongo_data/config_srv -p
+    mkdir ~/mongo_data/shard_srv -p
 
      mongod --shardsvr --dbpath ~/mongo_data/shard_srv --port 20001 --logpath ~/mongo_data/log-shard-srv.log --fork
 
@@ -52,6 +52,6 @@ This is test project which use Hadoop, MongoDB and MapReduce
 
 #### check sharding collection
 
-    db.getSiblingDB("config").shards.find(
+    db.getSiblingDB("config").collections.find()
 
 

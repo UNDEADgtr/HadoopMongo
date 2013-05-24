@@ -4,13 +4,13 @@ import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteConcern;
+import nl.jnc.util.CountryUtil;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Client implements Runnable {
 
@@ -33,6 +33,7 @@ public class Client implements Runnable {
         this.totalTime = new ArrayList<Long>();
         this.maxTime = Long.MIN_VALUE;
         this.minTime = Long.MAX_VALUE;
+
     }
 
     @Override
@@ -94,16 +95,9 @@ public class Client implements Runnable {
     public void insert() {
         String patent = "123456789";
         String date = "2013";
-        String country = getRandomCountry();
+        String country = CountryUtil.getRandomCountry();
         String code = "3";
         PatentData patentData = new PatentData(patent, date, country, code);
         collection.insert(patentData.getDBObject(), WriteConcern.SAFE);
-    }
-
-    private String[] countries = new String[]{"US", "RU", "BE", "GB", "UA"};
-
-    private String getRandomCountry() {
-        Random random = new Random();
-        return countries[random.nextInt(countries.length)];
     }
 }
