@@ -14,7 +14,7 @@ public class TestApp {
     private static Logger logger = Logger.getLogger(TestApp.class);
 
     private static String mongoHost = "localhost";
-    private static int mongoPort = 20001;
+    private static int mongoPort = 40001;
 
     private static int numberOfClients = 2000;
     private static int numberOfRequests = 2000;
