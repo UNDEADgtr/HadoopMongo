@@ -10,16 +10,16 @@ import nl.jnc.AppConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class WordCountMongo implements Runnable {
+public class WordCountMongoMapReduce implements Runnable {
 
-    private static final Log logger = LogFactory.getLog(WordCountMongo.class);
+    private static final Log logger = LogFactory.getLog(WordCountMongoMapReduce.class);
     private AppConfig appConfig;
 
     private DBCollection relativeCollection;
     private String mapFunc, reduceFunc;
     private final MapReduceCommand mpCommand;
 
-    public WordCountMongo(AppConfig appConfig) throws Exception {
+    public WordCountMongoMapReduce(AppConfig appConfig) throws Exception {
 
         this.appConfig = appConfig;
         MongoClient mongoClient = new MongoClient();

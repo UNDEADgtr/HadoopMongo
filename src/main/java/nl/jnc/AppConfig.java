@@ -9,6 +9,7 @@ public class AppConfig {
     private String inCollection;
     private String outHadoopCollection;
     private String outMongoCollection;
+    private String outMongoAggregateCollection;
     private long absoluteCalculatePeriodMills;
     private long clientSleepMills;
     private long numberOfRequest;
@@ -18,12 +19,14 @@ public class AppConfig {
     private List<Double> time;
 
     public AppConfig(String dbName, String inCollection, String outHadoopCollection, String outMongoCollection,
+                     String outMongoAggregateCollection,
                      long numberOfRequest, long absoluteCalculatePeriodMills, long clientSleepMills,
                      boolean launched, int launchCount, int numberOfClients) {
         this.dbName = dbName;
         this.inCollection = inCollection;
         this.outHadoopCollection = outHadoopCollection;
         this.outMongoCollection = outMongoCollection;
+        this.outMongoAggregateCollection = outMongoAggregateCollection;
         this.numberOfRequest = numberOfRequest;
         this.absoluteCalculatePeriodMills = absoluteCalculatePeriodMills;
         this.clientSleepMills = clientSleepMills;
@@ -63,6 +66,11 @@ public class AppConfig {
 
     public void setOutMongoCollection(String outMongoCollection) {
         this.outMongoCollection = outMongoCollection;
+    }
+
+
+    public String getOutMongoAggregateCollection() {
+        return outMongoAggregateCollection;
     }
 
     public long getAbsoluteCalculatePeriodMills() {
@@ -107,7 +115,7 @@ public class AppConfig {
             avTime = avTime + l;
         }
         avTime = avTime - time.get(0);
-        return avTime/(time.size() - 1);
+        return avTime / (time.size() - 1);
     }
 
     public int getNumberOfClients() {

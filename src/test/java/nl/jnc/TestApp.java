@@ -1,7 +1,8 @@
 package nl.jnc;
 
-import nl.jnc.hadoop.WordCount;
-import nl.jnc.mongo.WordCountMongo;
+import nl.jnc.hadoop.WordCountHadoop;
+import nl.jnc.mongo.WordCountMongoAggregation;
+import nl.jnc.mongo.WordCountMongoMapReduce;
 import nl.jnc.util.Util;
 import org.apache.log4j.Logger;
 
@@ -17,7 +18,8 @@ public class TestApp {
     private static String dbName = "test";
     private static String inCollection = "in";
     private static String outHadoopCollection = "hadoop_out";
-    private static String outMongoCollection = "mongo_out";
+    private static String outMongoCollectionMR = "mongo_out_mr";
+    private static String outMongoCollectionAggregate = "mongo_out_aggregate";
     private static long absoluteCalculatePeriod = 1000l;
     private static long clientSleepMills = 50l;
     private static boolean launched = true;
@@ -29,7 +31,8 @@ public class TestApp {
         appConfig = new AppConfig(dbName,
                 inCollection,
                 outHadoopCollection,
-                outMongoCollection,
+                outMongoCollectionMR,
+                outMongoCollectionAggregate,
                 numberOfRequests,
                 absoluteCalculatePeriod,
                 clientSleepMills,
@@ -56,9 +59,10 @@ public class TestApp {
 
     public void test() throws Exception {
         logger.debug("starting test...");
-//        this.startClients();
-        this.startMapReduceHodoop();
-//        this.startMapReduceMongo();
+        //this.startClients();
+        //this.startMapReduceHodoop();
+        this.startMapReduceMongo();
+        this.startMongoAggregate();
     }
 
     private void startClients() throws UnknownHostException {
@@ -70,15 +74,18 @@ public class TestApp {
     }
 
     private void startMapReduceHodoop() throws Exception {
-        WordCount wordCount = new WordCount(appConfig);
+        WordCountHadoop wordCount = new WordCountHadoop(appConfig);
         new Thread(wordCount).start();
     }
 
 
     private void startMapReduceMongo() throws Exception {
-        WordCountMongo wordCount = new WordCountMongo(appConfig);
+        WordCountMongoMapReduce wordCount = new WordCountMongoMapReduce(appConfig);
         new Thread(wordCount).start();
     }
 
-
+    private void startMongoAggregate() throws Exception {
+        WordCountMongoAggregation wordCount = new WordCountMongoAggregation(appConfig);
+        new Thread(wordCount).start();
+    }
 }

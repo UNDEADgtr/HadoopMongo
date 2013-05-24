@@ -17,7 +17,6 @@
 
 package nl.jnc.hadoop;
 
-import com.mongodb.DBObject;
 import com.mongodb.hadoop.MongoInputFormat;
 import com.mongodb.hadoop.MongoOutputFormat;
 import com.mongodb.hadoop.util.MongoConfigUtil;
@@ -27,11 +26,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.bson.BSONObject;
 
 import java.io.IOException;
@@ -41,9 +38,9 @@ import java.util.StringTokenizer;
  * test.in db.in.insert( { x : "eliot was here" } ) db.in.insert( { x : "eliot is here" } ) db.in.insert( { x : "who is
  * here" } ) =
  */
-public class WordCount implements Runnable {
+public class WordCountHadoop implements Runnable {
 
-    private static final Log logger = LogFactory.getLog(WordCount.class);
+    private static final Log logger = LogFactory.getLog(WordCountHadoop.class);
 
     private AppConfig appConfig;
 
@@ -81,7 +78,7 @@ public class WordCount implements Runnable {
         }
     }
 
-    public WordCount(AppConfig config) {
+    public WordCountHadoop(AppConfig config) {
         this.appConfig = config;
     }
 
@@ -105,7 +102,7 @@ public class WordCount implements Runnable {
                     e.printStackTrace();
                 }
 
-                job.setJarByClass(WordCount.class);
+                job.setJarByClass(WordCountHadoop.class);
                 job.setMapperClass(TokenizerMapper.class);
                 job.setCombinerClass(IntSumReducer.class);
                 job.setReducerClass(IntSumReducer.class);
@@ -139,7 +136,7 @@ public class WordCount implements Runnable {
     }
 
 //    public static void main( String[] args ) throws Exception{
-//        WordCount wordCount = new WordCount();
+//        WordCountHadoop wordCount = new WordCountHadoop();
 //        wordCount.run();
 //    }
 

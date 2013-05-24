@@ -56,7 +56,7 @@
                 <!--<configuration>-->
                     <!--<archive>-->
                         <!--<manifest>-->
-                            <!--<mainClass>nl.jnc.hadoop.WordCount</mainClass>-->
+                            <!--<mainClass>nl.jnc.hadoop.WordCountHadoopHadoop</mainClass>-->
                         <!--</manifest>-->
                     <!--</archive>-->
                 <!--</configuration>-->

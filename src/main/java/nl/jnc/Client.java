@@ -3,6 +3,7 @@ package nl.jnc;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import com.mongodb.WriteConcern;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 
@@ -93,15 +94,15 @@ public class Client implements Runnable {
     public void insert() {
         String patent = "123456789";
         String date = "2013";
-        String country = getRandomDelta();
+        String country = getRandomCountry();
         String code = "3";
         PatentData patentData = new PatentData(patent, date, country, code);
-        collection.insert(patentData.getDBObject());
+        collection.insert(patentData.getDBObject(), WriteConcern.SAFE);
     }
 
     private String[] countries = new String[]{"US", "RU", "BE", "GB", "UA"};
 
-    private String getRandomDelta() {
+    private String getRandomCountry() {
         Random random = new Random();
         return countries[random.nextInt(countries.length)];
     }
