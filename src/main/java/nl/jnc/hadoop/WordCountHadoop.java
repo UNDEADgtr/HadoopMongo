@@ -119,7 +119,9 @@ public class WordCountHadoop implements Runnable {
 
                 long endMapReduceTime = System.nanoTime();
                 double mapReduceTime = (endMapReduceTime - startTime) / oneBillion;
-                logger.debug("Map-Reduce Hodoop time = " + mapReduceTime + " seconds");
+                String timeString = "Map-Reduce Hodoop time = " + mapReduceTime + " seconds";
+                logger.debug(timeString);
+                System.out.println(timeString);
                 appConfig.addTime(mapReduceTime);
                 if (!appConfig.isLaunched()) {
                     break;
