@@ -2,6 +2,13 @@ HadoopMongo
 ===========
 This is test project which use Hadoop, MongoDB and MapReduce
 
+## configure linux security limit(for ubuntu 12.04):
+Set up limit of open files. For it add lines to file _/etc/security/limits.conf_
+
+    * soft nofile 64000
+    * hard nofile 64000
+
+[more details about linux limit for mongodb](http://docs.mongodb.org/manual/reference/ulimit/)
 
 ##mongod servers:
 
