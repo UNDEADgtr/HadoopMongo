@@ -41,8 +41,10 @@ public class Client implements Runnable {
         long startClientTime = System.nanoTime();
         long max = Long.MIN_VALUE;
         long min = Long.MAX_VALUE;
-        String msg = "client with device id=%s started";
-        logger.debug(String.format(msg, deviceId));
+        String msgTemplate = "client with device id=%s started";
+        String msg = String.format(msgTemplate, deviceId);
+        logger.debug(msg);
+        System.out.println(msg);
         for (int i = 0; i < this.appConfig.getNumberOfRequest(); i++) {
             long startTime = System.nanoTime();
             this.insert();
@@ -60,10 +62,14 @@ public class Client implements Runnable {
             }
 
         }
+        collection.getDB().getMongo().close();
         long endClientTime = System.nanoTime();
-        msg = "client with device id=%s stopped. Max insert time=%s nano seconds. Min insert time=%s nano seconds." +
+        msgTemplate = "client with device id=%s stopped. Max insert time=%s nano seconds. Min insert time=%s nano seconds." +
                 "Running client time: %s nano seconds";
-        logger.debug(String.format(msg, deviceId, max, min, endClientTime - startClientTime));
+
+        msg = String.format(msgTemplate, deviceId, max, min, endClientTime - startClientTime);
+        logger.debug(msg);
+        System.out.println(msg);
 
         if (max > maxTime) {
             maxTime = max;
@@ -81,12 +87,19 @@ public class Client implements Runnable {
             for (long l : Client.totalTime) {
                 total = total + l;
             }
-            logger.debug("      Max client time = " + Client.maxTime);
-            logger.debug("      Min client time = " + Client.minTime);
-            logger.debug("      Total client time = " + (total / Client.totalTime.size()));
-            logger.debug("      Average client time = " +
-                    (total / Client.totalTime.size() - appConfig.getNumberOfRequest() * appConfig.getClientSleepMills() * 1000000) /
-                            appConfig.getNumberOfRequest() + " sec per rec");
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n      Max insert client time = " + Client.maxTime);
+            sb.append("\n      Min insert client time = " + Client.minTime);
+            sb.append("\n      Total client time = " + (total / Client.totalTime.size()));
+            sb.append("\n      Average client time = " +
+                    ((total / Client.totalTime.size() - appConfig.getNumberOfRequest() * appConfig.getClientSleepMills() * 1000000) /
+                            appConfig.getNumberOfRequest()) + " sec per rec");
+            logger.debug(sb);
+            String manySymbols = "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+            System.out.println(manySymbols);
+            System.out.println(sb);
+            System.out.println(manySymbols);
+
         } else {
             count--;
         }
