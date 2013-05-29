@@ -17,7 +17,7 @@ public class TestApp {
     private static int mongoPort = 40001;
 
     private static int numberOfClients = 2000;
-    private static int numberOfRequests = 18000;
+    private static int numberOfRequests = 2000;
     private static String dbName = "test2000";
     private static String inCollection = "in";
     private static String outHadoopCollection = "hadoop_out";
@@ -65,8 +65,8 @@ public class TestApp {
 
     public void test() throws Exception {
         logger.debug("starting test...");
-        this.startClients();
-        //this.startMapReduceHodoop();
+        //this.startClients();
+        this.startMapReduceHodoop();
         //this.startMapReduceMongo();
         //this.startMongoAggregate();
     }
