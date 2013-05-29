@@ -18,7 +18,7 @@ public class TestApp {
 
     private static int numberOfClients = 2000;
     private static int numberOfRequests = 2000;
-    private static String dbName = "test2000";
+    private static String dbName = "test";
     private static String inCollection = "in";
     private static String outHadoopCollection = "hadoop_out";
     private static String outMongoCollectionMR = "mongo_out_mr";
