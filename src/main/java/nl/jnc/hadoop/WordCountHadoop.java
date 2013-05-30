@@ -17,6 +17,8 @@
 
 package nl.jnc.hadoop;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.hadoop.MongoInputFormat;
 import com.mongodb.hadoop.MongoOutputFormat;
 import com.mongodb.hadoop.util.MongoConfigUtil;
@@ -30,6 +32,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.bson.BSONObject;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -95,6 +98,9 @@ public class WordCountHadoop implements Runnable {
             int i = 0;
             while (true) {
                 Thread.sleep(appConfig.getAbsoluteCalculatePeriodMills());
+                ObjectId breakPointId = new ObjectId();
+                DBObject query = new BasicDBObject("_id", new BasicDBObject("$lt", breakPointId));
+                MongoConfigUtil.setQuery(conf, query);
 
                 Job job = null;
                 try {
