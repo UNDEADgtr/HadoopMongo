@@ -90,6 +90,7 @@ public class HBaseWordCounter {
 
         TableMapReduceUtil.initTableMapperJob("inTest", scan, Mapper.class, Text.class, IntWritable.class, job);
         TableMapReduceUtil.initTableReducerJob("outTest", Reducer.class, job);
+        TableMapReduceUtil.setScannerCaching(job, 10000);
 
         System.out.println("start Map-Reduce HBase...");
         long startTime = System.nanoTime();
@@ -97,7 +98,7 @@ public class HBaseWordCounter {
         job.waitForCompletion(true);
 
         long endMapReduceTime = System.nanoTime();
-        double mapReduceTime = (endMapReduceTime - startTime) / 1000000000;
+        double mapReduceTime = (endMapReduceTime - startTime) / 1000000000d;
         System.out.println("Map-Reduce Mongo time = " + mapReduceTime + " seconds");
     }
 }
