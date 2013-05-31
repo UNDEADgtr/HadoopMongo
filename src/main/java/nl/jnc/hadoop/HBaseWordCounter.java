@@ -1,9 +1,11 @@
 package nl.jnc.hadoop;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.Scan;
@@ -14,7 +16,9 @@ import org.apache.hadoop.hbase.mapreduce.TableMapper;
 import org.apache.hadoop.hbase.mapreduce.TableReducer;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
+import org.bson.types.ObjectId;
 
 
 /**
@@ -26,17 +30,19 @@ import org.apache.hadoop.mapreduce.Job;
 public class HBaseWordCounter {
 
 
-    static class Mapper extends TableMapper<ImmutableBytesWritable, IntWritable> {
+    static class Mapper extends TableMapper<Text, IntWritable> {
 
         private int numRecords = 0;
         private static final IntWritable one = new IntWritable(1);
 
         @Override
         public void map(ImmutableBytesWritable row, Result values, Context context) throws IOException {
-            // extract userKey from the compositeKey (userId + counter)
             ImmutableBytesWritable userKey = new ImmutableBytesWritable(row.get(), 0, Bytes.SIZEOF_INT);
+
+            String country = Bytes.toString(values.value());
+
             try {
-                context.write(userKey, one);
+                context.write(new Text(country), one);
             } catch (InterruptedException e) {
                 throw new IOException(e);
             }
@@ -47,18 +53,24 @@ public class HBaseWordCounter {
         }
     }
 
-    public static class Reducer extends TableReducer<ImmutableBytesWritable, IntWritable, ImmutableBytesWritable> {
+    public static class Reducer extends TableReducer<Text, IntWritable, Text> {
 
-        public void reduce(ImmutableBytesWritable key, Iterable<IntWritable> values, Context context)
+
+
+        public void reduce(Text key, Iterable<IntWritable> values, Context context)
                 throws IOException, InterruptedException {
+
             int sum = 0;
             for (IntWritable val : values) {
                 sum += val.get();
             }
 
-            Put put = new Put(key.get());
-            put.add(Bytes.toBytes("patent"), Bytes.toBytes("country"), Bytes.toBytes(sum));
-            System.out.println(String.format("stats :   key : %d,  count : %d", Bytes.toInt(key.get()), sum));
+            byte[] row = Bytes.toBytes("row_" + new ObjectId());
+            Put put = new Put(row);
+
+            put.add(Bytes.toBytes("count"), Bytes.toBytes("country"), Bytes.toBytes(key.toString()));
+            put.add(Bytes.toBytes("count"), Bytes.toBytes("count"), Bytes.toBytes(""+sum));
+
             context.write(key, put);
         }
     }
@@ -69,14 +81,23 @@ public class HBaseWordCounter {
 
         Job job = new Job(conf, "Hbase_HBaseWordCounter");
         job.setJarByClass(HBaseWordCounter.class);
+
+        byte[] family = Bytes.toBytes("patent");
+        byte[] qual = Bytes.toBytes("country");
+
         Scan scan = new Scan();
-        //String columns = "details"; // comma seperated
-        byte[] columns = Bytes.toBytes("patent");
-        scan.addFamily(columns);
-        scan.setFilter(new FirstKeyOnlyFilter());
-        TableMapReduceUtil.initTableMapperJob("test", scan, Mapper.class, ImmutableBytesWritable.class,
-                IntWritable.class, job);
-        TableMapReduceUtil.initTableReducerJob("test2", Reducer.class, job);
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
+        scan.addColumn(family, qual);
+
+        TableMapReduceUtil.initTableMapperJob("inTest", scan, Mapper.class, Text.class, IntWritable.class, job);
+        TableMapReduceUtil.initTableReducerJob("outTest", Reducer.class, job);
+
+        System.out.println("start Map-Reduce HBase...");
+        long startTime = System.nanoTime();
+
+        job.waitForCompletion(true);
+
+        long endMapReduceTime = System.nanoTime();
+        double mapReduceTime = (endMapReduceTime - startTime) / 1000000000;
+        System.out.println("Map-Reduce Mongo time = " + mapReduceTime + " seconds");
     }
 }
