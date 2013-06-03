@@ -9,6 +9,7 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.bson.types.ObjectId;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 public class HBaseClient {
     private static final Configuration config = HBaseConfiguration.create();
-    private static final byte[] tableName = Bytes.toBytes("in");
+    private static final byte[] tableName = Bytes.toBytes("inTest");
     private static final String rowName = "row";
     private static final int i = 0;
 
@@ -65,14 +66,14 @@ public class HBaseClient {
 
     public void insertRecords() throws IOException {
         HTable table = new HTable(config, tableName);
-        int i = 0;
+        //int i = 0;
         long startTime = System.nanoTime();
         byte[] dataPatent = Bytes.toBytes("patent");
         byte[] row;
         Put put;
         List<Put> puts = new ArrayList<Put>();
-        for (i = 0; i < 4000000; i++) {
-            row = Bytes.toBytes(rowName + i);
+        for (int i = 0; i < 100000; i++) {
+            row = Bytes.toBytes(rowName + new ObjectId());
             put = new Put(row);
             put.add(dataPatent, Bytes.toBytes("country"), Bytes.toBytes(CountryUtil.getRandomCountry()));
             put.add(dataPatent, Bytes.toBytes("patent"), Bytes.toBytes("123456789"));
